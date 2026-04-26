@@ -1,0 +1,33 @@
+# Web framework
+fastapi
+uvicorn[standard]
+
+# MongoDB
+motor
+pymongo
+
+# PostgreSQL
+asyncpg
+sqlalchemy[asyncio]
+
+# Data validation
+pydantic
+pydantic-settings
+
+# OCR (MOLLO)
+# pytesseract
+# Pillow
+# pdf2image
+# opencv-python
+
+# HTTP client
+httpx
+
+# Environment
+python-dotenv
+
+# Hashing / security
+passlib[bcrypt]
+
+# Date utilities
+python-dateutil
