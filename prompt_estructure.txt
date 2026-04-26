@@ -1,3 +1,12 @@
+
+
+
+
+
+
+
+
+
 You are working inside the repository: sistema-computo-electoral-bolivia.
 
 I need you to initialize the project structure only. Do not implement business logic yet. The goal is to prepare the repository so each team member can work in their assigned module without deviating from the architecture.
