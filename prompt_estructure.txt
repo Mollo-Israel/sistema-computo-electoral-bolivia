@@ -1,0 +1,370 @@
+You are working inside the repository: sistema-computo-electoral-bolivia.
+
+I need you to initialize the project structure only. Do not implement business logic yet. The goal is to prepare the repository so each team member can work in their assigned module without deviating from the architecture.
+
+Project context:
+This is Practice 4: Implementation of a National Electoral Count System for Bolivia.
+
+The system has two decoupled pipelines:
+
+1. RRV - Recuento Rápido de Votos
+- Input: PDF/image of electoral acts, mobile app photo, or SMS.
+- Flow: input -> OCR or SMS parser -> RRV validator -> functional logs/events -> MongoDB cluster -> dashboard.
+- Purpose: preliminary results, low latency, eventual consistency.
+- Cluster 1: MongoDB Replica Set.
+- Main collections:
+  - rrv_actas
+  - rrv_eventos
+  - rrv_logs
+  - rrv_metricas_tecnicas
+
+2. CO - Cómputo Oficial
+- Input: official CSV/transcription data.
+- Flow: CSV -> official automation -> official validator -> PostgreSQL cluster -> dashboard.
+- No OCR, no images, no SMS in this flow.
+- Purpose: official auditable results, strong consistency.
+- Cluster 2: PostgreSQL replicated.
+- Main tables:
+  - territorios
+  - recintos
+  - mesas
+  - usuarios_transcripcion
+  - actas_oficiales
+  - auditoria_oficial
+
+Dashboard:
+The dashboard compares RRV vs official count and must later show:
+- Participation
+- Total votes: valid, blank, null
+- Votes by party
+- Act status: received, processed, pending, observed, rejected, duplicated, published
+- Participation rate
+- Percentage by party
+- Victory margin
+- Processing speed
+- Differences between quick count and official count
+- Geographic analysis
+- Transparency and access to digital acts
+- Technical indicators: latency, throughput, availability, security
+- Anomalies and logs
+
+Important naming rules:
+Use these exact field names everywhere:
+- mesa_codigo
+- nro_mesa
+- codigo_recinto
+- recinto_nombre
+- codigo_territorial
+- departamento
+- provincia
+- municipio
+- partido_1_votos
+- partido_2_votos
+- partido_3_votos
+- partido_4_votos
+- votos_validos
+- votos_blancos
+- votos_nulos
+- votos_emitidos
+- boletas_no_utilizadas
+- total_boletas
+- nro_votantes
+- origen
+- fuente
+- estado
+
+Do not use variants like candidato_1, p1, vv, validos, votosPartido1, etc.
+
+Team assignments:
+- MOLLO: OCR RRV + image processing
+- Ferrufino: mobile app + SMS + receiver
+- Sanabria: validator + logs + OEP rules
+- Escobar: clusters + persistence + fault tolerance
+- Erick Diaz: official automation + comparative dashboard
+
+Task:
+Create only the initial folders and empty/template files. Do not implement logic yet. Use TODO comments and short README files to guide each teammate.
+
+Required repository structure:
+
+sistema-computo-electoral-bolivia/
+│
+├── backend/
+│   ├── app/
+│   │   ├── main.py
+│   │   ├── core/
+│   │   │   ├── config.py
+│   │   │   ├── constants.py
+│   │   │   └── database.py
+│   │   ├── api/
+│   │   │   ├── rrv_routes.py
+│   │   │   ├── oficial_routes.py
+│   │   │   ├── dashboard_routes.py
+│   │   │   └── health_routes.py
+│   │   ├── schemas/
+│   │   │   ├── rrv_schema.py
+│   │   │   ├── oficial_schema.py
+│   │   │   ├── sms_schema.py
+│   │   │   └── dashboard_schema.py
+│   │   ├── services/
+│   │   │   ├── ocr/
+│   │   │   │   ├── pdf_converter.py
+│   │   │   │   ├── image_preprocessor.py
+│   │   │   │   ├── field_extractor.py
+│   │   │   │   └── ocr_service.py
+│   │   │   ├── sms/
+│   │   │   │   ├── sms_receiver.py
+│   │   │   │   ├── sms_parser.py
+│   │   │   │   └── sms_security.py
+│   │   │   ├── validation/
+│   │   │   │   ├── rrv_validator.py
+│   │   │   │   ├── oficial_validator.py
+│   │   │   │   └── validation_rules.py
+│   │   │   ├── logging/
+│   │   │   │   ├── functional_log_service.py
+│   │   │   │   └── technical_logger.py
+│   │   │   ├── rrv/
+│   │   │   │   └── rrv_service.py
+│   │   │   ├── oficial/
+│   │   │   │   └── oficial_service.py
+│   │   │   └── metrics/
+│   │   │       └── metrics_service.py
+│   │   ├── repositories/
+│   │   │   ├── mongo_rrv_repository.py
+│   │   │   ├── postgres_oficial_repository.py
+│   │   │   └── dashboard_repository.py
+│   │   └── utils/
+│   │       ├── hash_utils.py
+│   │       ├── date_utils.py
+│   │       └── response_utils.py
+│   ├── uploads/
+│   ├── logs/
+│   ├── requirements.txt
+│   └── README.md
+│
+├── dashboard/
+│   ├── src/
+│   │   ├── pages/
+│   │   ├── components/
+│   │   ├── services/
+│   │   └── utils/
+│   └── README.md
+│
+├── mobile-app/
+│   ├── src/
+│   │   ├── screens/
+│   │   ├── services/
+│   │   └── components/
+│   └── README.md
+│
+├── automatizador-oficial/
+│   ├── data/
+│   ├── scripts/
+│   └── README.md
+│
+├── infra/
+│   ├── docker-compose.yml
+│   ├── mongo/
+│   ├── postgres/
+│   └── README.md
+│
+├── docs/
+│   ├── arquitectura.md
+│   ├── diccionario_datos.md
+│   ├── contratos_api.md
+│   ├── reglas_validacion.md
+│   ├── esquema_cluster_1_rrv.md
+│   ├── esquema_cluster_2_oficial.md
+│   └── defensa_individual.md
+│
+├── samples/
+│   ├── actas/
+│   ├── csv/
+│   └── sms/
+│
+├── .env.example
+├── .gitignore
+└── README.md
+
+Also add __init__.py files in all backend Python package folders so imports work correctly.
+
+Initialize files as follows:
+
+1. README.md at root:
+- Explain the project objective.
+- Explain the two pipelines.
+- Explain team assignments.
+- Explain that implementation must respect the standard data contract.
+
+2. backend/README.md:
+- Explain backend responsibilities.
+- List planned API groups:
+  - /api/rrv
+  - /api/oficial
+  - /api/dashboard
+  - /api/health
+
+3. docs/diccionario_datos.md:
+Create a table defining all standard fields:
+- mesa_codigo
+- nro_mesa
+- codigo_recinto
+- recinto_nombre
+- codigo_territorial
+- departamento
+- provincia
+- municipio
+- partido_1_votos
+- partido_2_votos
+- partido_3_votos
+- partido_4_votos
+- votos_validos
+- votos_blancos
+- votos_nulos
+- votos_emitidos
+- boletas_no_utilizadas
+- total_boletas
+- nro_votantes
+- origen
+- fuente
+- estado
+
+4. docs/reglas_validacion.md:
+Include these rules:
+- partido_1_votos + partido_2_votos + partido_3_votos + partido_4_votos = votos_validos
+- votos_validos + votos_blancos + votos_nulos = votos_emitidos
+- votos_emitidos + boletas_no_utilizadas = total_boletas
+- votos_emitidos <= nro_votantes
+- A duplicated mesa_codigo must not replace an already valid/published act automatically
+- Low OCR confidence must mark the act as OBSERVADA
+- Invalid SMS format must mark the act as RECHAZADA
+
+5. docs/contratos_api.md:
+Include standard JSON examples for:
+- RRV input
+- Official transcription input
+
+RRV JSON example:
+{
+  "mesa_codigo": "800412-1",
+  "nro_mesa": 1,
+  "codigo_recinto": "800412",
+  "recinto_nombre": "Escuela Espiritu Santo",
+  "codigo_territorial": "800412",
+  "departamento": "Beni",
+  "provincia": "Cercado",
+  "municipio": "San Javier",
+  "origen": "OCR",
+  "fuente": "PDF",
+  "partido_1_votos": 8,
+  "partido_2_votos": 1,
+  "partido_3_votos": 7,
+  "partido_4_votos": 10,
+  "votos_validos": 55,
+  "votos_blancos": 3,
+  "votos_nulos": 7,
+  "votos_emitidos": 65,
+  "boletas_no_utilizadas": 10,
+  "total_boletas": 75,
+  "nro_votantes": 75
+}
+
+Official JSON example:
+{
+  "mesa_codigo": "800412-1",
+  "codigo_recinto": "800412",
+  "codigo_territorial": "800412",
+  "partido_1_votos": 8,
+  "partido_2_votos": 1,
+  "partido_3_votos": 7,
+  "partido_4_votos": 10,
+  "votos_validos": 55,
+  "votos_blancos": 3,
+  "votos_nulos": 7,
+  "votos_emitidos": 65,
+  "boletas_no_utilizadas": 10,
+  "total_boletas": 75,
+  "nro_votantes": 75,
+  "fuente": "AUTOMATIZADOR",
+  "fila_csv": 12,
+  "usuario_id": 4
+}
+
+6. docs/esquema_cluster_1_rrv.md:
+Document MongoDB collections:
+- rrv_actas
+- rrv_eventos
+- rrv_logs
+- rrv_metricas_tecnicas
+
+7. docs/esquema_cluster_2_oficial.md:
+Document PostgreSQL tables:
+- territorios
+- recintos
+- mesas
+- usuarios_transcripcion
+- actas_oficiales
+- auditoria_oficial
+
+8. docs/defensa_individual.md:
+Create sections for:
+- MOLLO
+- Ferrufino
+- Sanabria
+- Escobar
+- Erick Diaz
+Add a short English explanation placeholder for each member.
+
+9. backend/app/main.py:
+Create a minimal FastAPI app skeleton with TODOs only.
+Do not implement real routes yet, but include comments indicating routers will be mounted later:
+- rrv_routes
+- oficial_routes
+- dashboard_routes
+- health_routes
+
+10. Python files:
+Add short TODO comments describing each file responsibility.
+Do not implement business logic yet.
+
+11. infra/docker-compose.yml:
+Create a placeholder Docker Compose file with commented sections for:
+- MongoDB RRV
+- PostgreSQL Oficial
+- Backend
+- Dashboard
+Do not make it complex yet.
+
+12. .env.example:
+Add placeholder variables:
+BACKEND_PORT=8000
+MONGO_RRV_URI=mongodb://localhost:27017/rrv_db
+POSTGRES_OFICIAL_HOST=localhost
+POSTGRES_OFICIAL_PORT=5432
+POSTGRES_OFICIAL_DB=computo_oficial_db
+POSTGRES_OFICIAL_USER=postgres
+POSTGRES_OFICIAL_PASSWORD=postgres
+UPLOADS_DIR=backend/uploads
+SMS_PIN_DEFAULT=1234
+
+13. .gitignore:
+Include Python, Node, environment, logs, uploads and OS ignores.
+
+Important restrictions:
+- Do not install dependencies.
+- Do not run npm create or expo init.
+- Do not implement OCR, SMS, validators, database logic, dashboard components or automation logic yet.
+- Do not delete existing files unless they are empty placeholder files from this initialization.
+- Do not create unrelated folders.
+- Do not use different field names.
+- Keep everything focused on the two-pipeline architecture.
+
+After creating the structure, show me:
+1. A summary of folders created.
+2. A summary of files created.
+3. Any files that already existed and were not overwritten.
+
+Do not implement business logic yet.
+Do not install dependencies.
+Do not run npm create or expo init.
+Do not implement OCR, SMS, validators, database logic, dashboard components or automation logic yet.

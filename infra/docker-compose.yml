@@ -1,0 +1,66 @@
+version: "3.9"
+
+# TODO (Escobar): complete each service configuration before deployment.
+# This is a placeholder structure only.
+
+services:
+
+  # ─── Cluster 1: MongoDB RRV ─────────────────────────────────────────────────
+  # TODO (Escobar): configure MongoDB replica set (3 nodes)
+  # mongo-rrv-primary:
+  #   image: mongo:7
+  #   container_name: mongo-rrv-primary
+  #   ports:
+  #     - "27017:27017"
+  #   environment:
+  #     MONGO_INITDB_DATABASE: rrv_db
+  #   volumes:
+  #     - ./mongo/init:/docker-entrypoint-initdb.d
+  #   networks:
+  #     - rrv-net
+
+  # ─── Cluster 2: PostgreSQL Oficial ──────────────────────────────────────────
+  # TODO (Escobar): configure PostgreSQL with streaming replication
+  # postgres-oficial:
+  #   image: postgres:16
+  #   container_name: postgres-oficial
+  #   ports:
+  #     - "5432:5432"
+  #   environment:
+  #     POSTGRES_DB: computo_oficial_db
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #   volumes:
+  #     - ./postgres/init:/docker-entrypoint-initdb.d
+  #   networks:
+  #     - oficial-net
+
+  # ─── Backend API ─────────────────────────────────────────────────────────────
+  # TODO: configure after backend is functional
+  # backend:
+  #   build: ../backend
+  #   container_name: backend-api
+  #   ports:
+  #     - "8000:8000"
+  #   env_file:
+  #     - ../.env
+  #   depends_on:
+  #     - mongo-rrv-primary
+  #     - postgres-oficial
+  #   networks:
+  #     - rrv-net
+  #     - oficial-net
+
+  # ─── Dashboard ───────────────────────────────────────────────────────────────
+  # TODO (Erick Diaz): configure after dashboard is built
+  # dashboard:
+  #   build: ../dashboard
+  #   container_name: dashboard-app
+  #   ports:
+  #     - "3000:3000"
+  #   networks:
+  #     - rrv-net
+
+# networks:
+#   rrv-net:
+#   oficial-net:

@@ -216,3 +216,39 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Node / frontend
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+dist/
+build/
+.next/
+.nuxt/
+.output/
+.expo/
+*.tsbuildinfo
+
+# Logs and uploads (runtime data — not for version control)
+backend/logs/*
+!backend/logs/.gitkeep
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Sample data — gitkeep only
+samples/actas/*
+!samples/actas/.gitkeep
+samples/csv/*
+!samples/csv/.gitkeep
+samples/sms/*
+!samples/sms/.gitkeep
+automatizador-oficial/data/*
+!automatizador-oficial/data/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
