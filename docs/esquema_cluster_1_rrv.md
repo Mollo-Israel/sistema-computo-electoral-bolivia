@@ -7,6 +7,7 @@
 ## Colecciones
 
 ### `rrv_actas`
+
 Almacena cada acta RRV procesada (desde OCR, SMS o app móvil).
 
 ```json
@@ -38,11 +39,13 @@ Almacena cada acta RRV procesada (desde OCR, SMS o app móvil).
   "timestamp": "ISODate"
 }
 ```
+
 - Índice único en `mesa_codigo` (para detección de duplicados).
 
 ---
 
 ### `rrv_eventos`
+
 Registro de eventos del ciclo de vida del acta.
 
 ```json
@@ -58,6 +61,7 @@ Registro de eventos del ciclo de vida del acta.
 ---
 
 ### `rrv_logs`
+
 Logs funcionales del sistema RRV.
 
 ```json
@@ -74,6 +78,7 @@ Logs funcionales del sistema RRV.
 ---
 
 ### `rrv_metricas_tecnicas`
+
 Métricas de rendimiento del pipeline RRV.
 
 ```json
@@ -88,7 +93,9 @@ Métricas de rendimiento del pipeline RRV.
 ```
 
 ## Configuración del Replica Set
+
 El Replica Set de MongoDB está configurado como `rs0` con tres miembros:
+
 - `mongo-rrv-primary:27017` (primary)
 - `mongo-rrv-secondary-1:27017` (secondary)
 - `mongo-rrv-secondary-2:27017` (secondary)
@@ -102,4 +109,5 @@ mongodb://mongo-rrv-primary:27017,mongo-rrv-secondary-1:27017,mongo-rrv-secondar
 ```
 
 ### Tolerancia a fallos
+
 Si el primary falla, el Replica Set elegirá automáticamente uno de los secundarios como nuevo primary. Los datos se replican continuamente entre los miembros, manteniendo persistencia y disponibilidad del cluster.

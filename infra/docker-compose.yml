@@ -4,7 +4,7 @@ services:
   mongo-rrv-primary:
     image: mongo:7
     container_name: mongo-rrv-primary
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    command: [ "mongod", "--replSet", "rs0", "--bind_ip_all" ]
     ports:
       - "27017:27017"
     volumes:
@@ -15,7 +15,7 @@ services:
   mongo-rrv-secondary-1:
     image: mongo:7
     container_name: mongo-rrv-secondary-1
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    command: [ "mongod", "--replSet", "rs0", "--bind_ip_all" ]
     volumes:
       - ./mongo/data/secondary1:/data/db
     networks:
@@ -24,7 +24,7 @@ services:
   mongo-rrv-secondary-2:
     image: mongo:7
     container_name: mongo-rrv-secondary-2
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    command: [ "mongod", "--replSet", "rs0", "--bind_ip_all" ]
     volumes:
       - ./mongo/data/secondary2:/data/db
     networks:
@@ -39,7 +39,7 @@ services:
       - mongo-rrv-secondary-2
     volumes:
       - ./mongo/bootstrap.sh:/docker-entrypoint-initdb.d/bootstrap.sh:ro
-    entrypoint: ["/bin/bash", "/docker-entrypoint-initdb.d/bootstrap.sh"]
+    entrypoint: [ "/bin/bash", "/docker-entrypoint-initdb.d/bootstrap.sh" ]
     networks:
       - rrv-net
     restart: "no"
@@ -72,7 +72,7 @@ services:
         "-c",
         "hot_standby=on",
         "-c",
-        "hba_file=/etc/postgresql/pg_hba.conf"
+        "hba_file=/etc/postgresql/pg_hba.conf",
       ]
     networks:
       - oficial-net
@@ -88,7 +88,7 @@ services:
     volumes:
       - ./postgres/data/standby:/var/lib/postgresql/data
       - ./postgres/standby/standby-entrypoint.sh:/docker-entrypoint-initdb.d/standby-entrypoint.sh:ro
-    entrypoint: ["/bin/bash", "/docker-entrypoint-initdb.d/standby-entrypoint.sh"]
+    entrypoint: [ "/bin/bash", "/docker-entrypoint-initdb.d/standby-entrypoint.sh" ]
     depends_on:
       - postgres-oficial-primary
     networks:

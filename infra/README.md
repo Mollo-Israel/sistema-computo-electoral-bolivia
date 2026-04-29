@@ -3,16 +3,19 @@
 ## Responsable: Escobar
 
 ## Estructura
+
 - `docker-compose.yml` — orquestación de servicios de cluster.
 - `mongo/` — datos y soporte para MongoDB Replica Set.
 - `postgres/` — datos y scripts de inicialización para PostgreSQL primary/standby.
 
 ## Implementación
+
 - Configurado MongoDB Replica Set `rs0` con 3 nodos: primary + 2 secondaries.
 - Configurado PostgreSQL en streaming replication con primary y standby.
 - `infra/docker-compose.yml` define los servicios y las redes necesarias.
 
 ## Uso
+
 1. Iniciar los clusters:
    ```bash
    cd infra
@@ -28,6 +31,7 @@
    ```
 
 ## Notas
+
 - El cluster MongoDB usa `mongo-rrv-primary:27017` como punto de entrada y replica al resto de miembros.
 - El cluster PostgreSQL usa `postgres-oficial-primary:5432` como primary y `postgres-oficial-standby` se configura como standby de réplica.
 - La aplicación backend debe usar las direcciones de servicio Docker Compose para conectarse a los clusters.

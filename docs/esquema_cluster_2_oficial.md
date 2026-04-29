@@ -7,6 +7,7 @@
 ## Tablas
 
 ### `territorios`
+
 Catálogo territorial (departamentos, provincias, municipios).
 
 ```sql
@@ -22,6 +23,7 @@ CREATE TABLE territorios (
 ---
 
 ### `recintos`
+
 Catálogo de recintos electorales.
 
 ```sql
@@ -36,6 +38,7 @@ CREATE TABLE recintos (
 ---
 
 ### `mesas`
+
 Catálogo de mesas de votación.
 
 ```sql
@@ -51,6 +54,7 @@ CREATE TABLE mesas (
 ---
 
 ### `usuarios_transcripcion`
+
 Operadores del sistema de transcripción oficial.
 
 ```sql
@@ -65,6 +69,7 @@ CREATE TABLE usuarios_transcripcion (
 ---
 
 ### `actas_oficiales`
+
 Actas del Cómputo Oficial.
 
 ```sql
@@ -95,6 +100,7 @@ CREATE TABLE actas_oficiales (
 ---
 
 ### `auditoria_oficial`
+
 Trazabilidad de cambios en actas oficiales.
 
 ```sql
@@ -109,11 +115,14 @@ CREATE TABLE auditoria_oficial (
 ```
 
 ## Configuración de Replicación
+
 El cluster de PostgreSQL se despliega con un primary y un standby:
+
 - `postgres-oficial-primary` — base de datos principal
 - `postgres-oficial-standby` — réplica de lectura y conmutación por error
 
 La configuración de streaming replication incluye:
+
 - `wal_level=replica`
 - `max_wal_senders=3`
 - `wal_keep_size=64`
@@ -122,7 +131,9 @@ La configuración de streaming replication incluye:
 El standby se inicializa usando `pg_basebackup` desde el primary y crea el archivo `standby.signal` para arrancar en modo réplica.
 
 ### Conexión de la aplicación
+
 La aplicación debe acceder al primary en `postgres-oficial-primary:5432`.
 
 ### Tolerancia a fallos
+
 Si `postgres-oficial-primary` queda inalcanzable, el standby ya tiene una copia de los WAL y puede asumir la carga de lectura/escritura tras la conmutación manual o automática configurada fuera de este repositorio.
