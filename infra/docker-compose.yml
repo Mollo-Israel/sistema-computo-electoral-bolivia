@@ -1,66 +1,99 @@
 version: "3.9"
 
-# TODO (Escobar): complete each service configuration before deployment.
-# This is a placeholder structure only.
-
 services:
+  mongo-rrv-primary:
+    image: mongo:7
+    container_name: mongo-rrv-primary
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo/data/primary:/data/db
+    networks:
+      - rrv-net
 
-  # ─── Cluster 1: MongoDB RRV ─────────────────────────────────────────────────
-  # TODO (Escobar): configure MongoDB replica set (3 nodes)
-  # mongo-rrv-primary:
-  #   image: mongo:7
-  #   container_name: mongo-rrv-primary
-  #   ports:
-  #     - "27017:27017"
-  #   environment:
-  #     MONGO_INITDB_DATABASE: rrv_db
-  #   volumes:
-  #     - ./mongo/init:/docker-entrypoint-initdb.d
-  #   networks:
-  #     - rrv-net
+  mongo-rrv-secondary-1:
+    image: mongo:7
+    container_name: mongo-rrv-secondary-1
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    volumes:
+      - ./mongo/data/secondary1:/data/db
+    networks:
+      - rrv-net
 
-  # ─── Cluster 2: PostgreSQL Oficial ──────────────────────────────────────────
-  # TODO (Escobar): configure PostgreSQL with streaming replication
-  # postgres-oficial:
-  #   image: postgres:16
-  #   container_name: postgres-oficial
-  #   ports:
-  #     - "5432:5432"
-  #   environment:
-  #     POSTGRES_DB: computo_oficial_db
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_PASSWORD: postgres
-  #   volumes:
-  #     - ./postgres/init:/docker-entrypoint-initdb.d
-  #   networks:
-  #     - oficial-net
+  mongo-rrv-secondary-2:
+    image: mongo:7
+    container_name: mongo-rrv-secondary-2
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    volumes:
+      - ./mongo/data/secondary2:/data/db
+    networks:
+      - rrv-net
 
-  # ─── Backend API ─────────────────────────────────────────────────────────────
-  # TODO: configure after backend is functional
-  # backend:
-  #   build: ../backend
-  #   container_name: backend-api
-  #   ports:
-  #     - "8000:8000"
-  #   env_file:
-  #     - ../.env
-  #   depends_on:
-  #     - mongo-rrv-primary
-  #     - postgres-oficial
-  #   networks:
-  #     - rrv-net
-  #     - oficial-net
+  mongo-rrv-bootstrap:
+    image: mongo:7
+    container_name: mongo-rrv-bootstrap
+    depends_on:
+      - mongo-rrv-primary
+      - mongo-rrv-secondary-1
+      - mongo-rrv-secondary-2
+    volumes:
+      - ./mongo/bootstrap.sh:/docker-entrypoint-initdb.d/bootstrap.sh:ro
+    entrypoint: ["/bin/bash", "/docker-entrypoint-initdb.d/bootstrap.sh"]
+    networks:
+      - rrv-net
+    restart: "no"
 
-  # ─── Dashboard ───────────────────────────────────────────────────────────────
-  # TODO (Erick Diaz): configure after dashboard is built
-  # dashboard:
-  #   build: ../dashboard
-  #   container_name: dashboard-app
-  #   ports:
-  #     - "3000:3000"
-  #   networks:
-  #     - rrv-net
+  postgres-oficial-primary:
+    image: postgres:16
+    container_name: postgres-oficial-primary
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: computo_oficial_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./postgres/data/primary:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d
+      - ./postgres/config/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
+    command:
+      [
+        "postgres",
+        "-c",
+        "listen_addresses=*",
+        "-c",
+        "wal_level=replica",
+        "-c",
+        "max_wal_senders=3",
+        "-c",
+        "wal_keep_size=64",
+        "-c",
+        "hot_standby=on",
+        "-c",
+        "hba_file=/etc/postgresql/pg_hba.conf"
+      ]
+    networks:
+      - oficial-net
 
-# networks:
-#   rrv-net:
-#   oficial-net:
+  postgres-oficial-standby:
+    image: postgres:16
+    container_name: postgres-oficial-standby
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGPASSWORD: postgres
+    volumes:
+      - ./postgres/data/standby:/var/lib/postgresql/data
+      - ./postgres/standby/standby-entrypoint.sh:/docker-entrypoint-initdb.d/standby-entrypoint.sh:ro
+    entrypoint: ["/bin/bash", "/docker-entrypoint-initdb.d/standby-entrypoint.sh"]
+    depends_on:
+      - postgres-oficial-primary
+    networks:
+      - oficial-net
+
+networks:
+  rrv-net:
+  oficial-net:

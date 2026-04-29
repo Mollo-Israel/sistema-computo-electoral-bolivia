@@ -88,4 +88,18 @@ Métricas de rendimiento del pipeline RRV.
 ```
 
 ## Configuración del Replica Set
-TODO (Escobar): configurar 3 nodos (1 primary + 2 secondary) con `rs.initiate()`.
+El Replica Set de MongoDB está configurado como `rs0` con tres miembros:
+- `mongo-rrv-primary:27017` (primary)
+- `mongo-rrv-secondary-1:27017` (secondary)
+- `mongo-rrv-secondary-2:27017` (secondary)
+
+El despliegue se realiza con Docker Compose en `infra/docker-compose.yml`. El servicio `mongo-rrv-bootstrap` inicializa automáticamente el Replica Set usando `rs.initiate()` y habilita la elección automática de primary.
+
+La cadena de conexión recomendada para la aplicación es:
+
+```text
+mongodb://mongo-rrv-primary:27017,mongo-rrv-secondary-1:27017,mongo-rrv-secondary-2:27017/rrv_db?replicaSet=rs0
+```
+
+### Tolerancia a fallos
+Si el primary falla, el Replica Set elegirá automáticamente uno de los secundarios como nuevo primary. Los datos se replican continuamente entre los miembros, manteniendo persistencia y disponibilidad del cluster.

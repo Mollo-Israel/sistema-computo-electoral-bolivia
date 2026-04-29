@@ -109,4 +109,20 @@ CREATE TABLE auditoria_oficial (
 ```
 
 ## Configuración de Replicación
-TODO (Escobar): configurar streaming replication con `primary_conninfo` y `standby.signal`.
+El cluster de PostgreSQL se despliega con un primary y un standby:
+- `postgres-oficial-primary` — base de datos principal
+- `postgres-oficial-standby` — réplica de lectura y conmutación por error
+
+La configuración de streaming replication incluye:
+- `wal_level=replica`
+- `max_wal_senders=3`
+- `wal_keep_size=64`
+- `hot_standby=on`
+
+El standby se inicializa usando `pg_basebackup` desde el primary y crea el archivo `standby.signal` para arrancar en modo réplica.
+
+### Conexión de la aplicación
+La aplicación debe acceder al primary en `postgres-oficial-primary:5432`.
+
+### Tolerancia a fallos
+Si `postgres-oficial-primary` queda inalcanzable, el standby ya tiene una copia de los WAL y puede asumir la carga de lectura/escritura tras la conmutación manual o automática configurada fuera de este repositorio.

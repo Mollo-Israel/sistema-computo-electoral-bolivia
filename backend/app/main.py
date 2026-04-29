@@ -1,8 +1,15 @@
 """
 Entry point for the Electoral Count System API.
-TODO: mount routers once each service is implemented.
 """
 from fastapi import FastAPI
+
+from app.api.health_routes import router as health_router
+from app.core.database import (
+    connect_mongo,
+    connect_postgres,
+    disconnect_mongo,
+    disconnect_postgres,
+)
 
 app = FastAPI(
     title="Sistema de Cómputo Electoral Bolivia",
@@ -10,23 +17,21 @@ app = FastAPI(
     description="API para los pipelines RRV y Cómputo Oficial.",
 )
 
-# TODO (MOLLO / Ferrufino / Sanabria): include rrv_routes.router
-# from app.api.rrv_routes import router as rrv_router
-# app.include_router(rrv_router, prefix="/api/rrv", tags=["RRV"])
+app.include_router(health_router, prefix="/api/health", tags=["Health"])
 
-# TODO (Erick Diaz): include oficial_routes.router
-# from app.api.oficial_routes import router as oficial_router
-# app.include_router(oficial_router, prefix="/api/oficial", tags=["Oficial"])
 
-# TODO (Erick Diaz): include dashboard_routes.router
-# from app.api.dashboard_routes import router as dashboard_router
-# app.include_router(dashboard_router, prefix="/api/dashboard", tags=["Dashboard"])
+@app.on_event("startup")
+async def startup_event() -> None:
+    await connect_mongo()
+    await connect_postgres()
 
-# TODO (Escobar): include health_routes.router
-# from app.api.health_routes import router as health_router
-# app.include_router(health_router, prefix="/api/health", tags=["Health"])
+
+@app.on_event("shutdown")
+async def shutdown_event() -> None:
+    await disconnect_mongo()
+    await disconnect_postgres()
 
 
 @app.get("/")
-async def root():
+async def root() -> dict:
     return {"message": "Sistema de Cómputo Electoral - API activa"}
