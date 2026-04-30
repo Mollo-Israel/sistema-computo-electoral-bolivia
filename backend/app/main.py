@@ -1,32 +1,38 @@
 """
 Entry point for the Electoral Count System API.
-TODO: mount routers once each service is implemented.
 """
+from __future__ import annotations
+
+from pathlib import Path
+
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+
+from app.api.dashboard_routes import router as dashboard_router
+from app.api.oficial_routes import router as oficial_router
+from app.core.config import settings
+from app.utils.storage_utils import ensure_storage_dir
 
 app = FastAPI(
     title="Sistema de Cómputo Electoral Bolivia",
     version="0.1.0",
-    description="API para los pipelines RRV y Cómputo Oficial.",
+    description="API para el pipeline Oficial y dashboard comparativo.",
 )
 
-# TODO (MOLLO / Ferrufino / Sanabria): include rrv_routes.router
-# from app.api.rrv_routes import router as rrv_router
-# app.include_router(rrv_router, prefix="/api/rrv", tags=["RRV"])
+app.include_router(oficial_router, prefix="/api/oficial", tags=["Oficial"])
+app.include_router(dashboard_router, prefix="/api/dashboard", tags=["Dashboard"])
 
-# TODO (Erick Diaz): include oficial_routes.router
-# from app.api.oficial_routes import router as oficial_router
-# app.include_router(oficial_router, prefix="/api/oficial", tags=["Oficial"])
-
-# TODO (Erick Diaz): include dashboard_routes.router
-# from app.api.dashboard_routes import router as dashboard_router
-# app.include_router(dashboard_router, prefix="/api/dashboard", tags=["Dashboard"])
-
-# TODO (Escobar): include health_routes.router
-# from app.api.health_routes import router as health_router
-# app.include_router(health_router, prefix="/api/health", tags=["Health"])
+ensure_storage_dir()
+project_root = Path(__file__).resolve().parents[2]
+dashboard_dir = project_root / settings.dashboard_dir
+if dashboard_dir.exists():
+    app.mount("/dashboard-ui", StaticFiles(directory=dashboard_dir, html=True), name="dashboard-ui")
 
 
 @app.get("/")
 async def root():
-    return {"message": "Sistema de Cómputo Electoral - API activa"}
+    return {
+        "message": "Sistema de Cómputo Electoral - API activa",
+        "dashboard_ui": "/dashboard-ui",
+        "api_resumen": "/api/dashboard/resumen",
+    }

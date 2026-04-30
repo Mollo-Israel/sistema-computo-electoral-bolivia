@@ -22,6 +22,8 @@ pydantic-settings
 
 # HTTP client
 httpx
+pandas
+openpyxl
 
 # Environment
 python-dotenv

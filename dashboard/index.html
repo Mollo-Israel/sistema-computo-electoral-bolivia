@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Comparativo Electoral</title>
+  <link rel="stylesheet" href="/dashboard-ui/styles.css?v=20260430-3">
+</head>
+<body>
+  <div class="page-shell">
+    <div class="page-glow page-glow-a"></div>
+    <div class="page-glow page-glow-b"></div>
+
+    <main class="page">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Sistema Nacional de Cómputo Electoral</p>
+          <h1>Dashboard Comparativo</h1>
+          <p class="lede">
+            Cruce entre Recuento Rápido de Votos y Cómputo Oficial para detectar diferencias,
+            medir participación y seguir el estado de las actas en una sola vista operativa.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="/docs">Ver API</a>
+            <a class="button button-secondary" href="/api/dashboard/resumen">Resumen JSON</a>
+          </div>
+        </div>
+
+        <aside class="hero-aside">
+          <div class="hero-badge">
+            <span class="hero-badge-label">Actualización automática</span>
+            <strong id="refresh-status">Cargando...</strong>
+          </div>
+          <div class="hero-insight" id="hero-insight">
+            <span class="mini-label">Lectura general</span>
+            <strong>Esperando datos del backend</strong>
+            <p>La visualización resumirá el ganador, el margen y la salud del flujo oficial.</p>
+          </div>
+        </aside>
+      </section>
+
+      <section id="summary-cards" class="summary-grid"></section>
+
+      <section class="analytics-grid">
+        <article class="panel panel-spotlight">
+          <div class="panel-head">
+            <div>
+              <p class="section-kicker">Tendencia</p>
+              <h2>Carrera por partido</h2>
+            </div>
+            <span class="pill" id="winner-pill">Sin datos</span>
+          </div>
+          <div id="party-chart" class="bars"></div>
+        </article>
+
+        <article class="panel panel-compact">
+          <div class="panel-head">
+            <div>
+              <p class="section-kicker">Salud operativa</p>
+              <h2>Estados de actas</h2>
+            </div>
+          </div>
+          <div id="states-grid" class="state-grid"></div>
+        </article>
+      </section>
+
+      <section class="analytics-grid">
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="section-kicker">Monitoreo</p>
+              <h2>Comparación RRV vs Oficial</h2>
+            </div>
+            <span class="panel-meta" id="comparison-meta">Sin diferencias calculadas</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Mesa</th>
+                  <th>Departamento</th>
+                  <th>RRV</th>
+                  <th>Oficial</th>
+                  <th>Diferencia</th>
+                </tr>
+              </thead>
+              <tbody id="comparison-body"></tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="section-kicker">Cobertura territorial</p>
+              <h2>Geografía oficial</h2>
+            </div>
+          </div>
+          <div id="geo-cards" class="geo-cards"></div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Clave</th>
+                  <th>Actas</th>
+                  <th>Emitidos</th>
+                  <th>Válidos</th>
+                </tr>
+              </thead>
+              <tbody id="geo-body"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section class="analytics-grid">
+        <article class="panel panel-compact">
+          <div class="panel-head">
+            <div>
+              <p class="section-kicker">Rendimiento</p>
+              <h2>Métricas técnicas</h2>
+            </div>
+          </div>
+          <div id="technical-metrics" class="metric-list"></div>
+        </article>
+
+        <article class="panel panel-compact">
+          <div class="panel-head">
+            <div>
+              <p class="section-kicker">Trazabilidad</p>
+              <h2>Anomalías</h2>
+            </div>
+            <span class="panel-meta" id="anomaly-meta">Sin observaciones</span>
+          </div>
+          <ul id="anomalies-list" class="anomaly-list"></ul>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script src="/dashboard-ui/app.js?v=20260430-3"></script>
+</body>
+</html>
