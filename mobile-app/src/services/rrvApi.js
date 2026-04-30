@@ -1,26 +1,33 @@
-const API_URL = "http://192.168.0.95:3001/api";
+const API_URL = "http://192.168.0.95:3001/api/rrv/upload-acta";
 
-export async function uploadActaImage(imageUri) {
+export async function uploadActaPdf(pdfUri) {
   const formData = new FormData();
 
   formData.append("acta", {
-    uri: imageUri,
-    name: "acta-electoral.jpg",
-    type: "image/jpeg",
+    uri: pdfUri,
+    name: "acta-electoral.pdf",
+    type: "application/pdf"
   });
 
-  const response = await fetch(`${API_URL}/rrv/upload-acta`, {
+  const response = await fetch(API_URL, {
     method: "POST",
-    body: formData,
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
+    body: formData
   });
 
-  const data = await response.json();
+  const responseText = await response.text();
+
+  let data = null;
+
+  try {
+    data = JSON.parse(responseText);
+  } catch {
+    throw new Error(
+      `El backend no devolvió JSON. Estado: ${response.status}. Respuesta: ${responseText.substring(0, 180)}`
+    );
+  }
 
   if (!response.ok) {
-    throw new Error(data.message || "Error al subir el acta");
+    throw new Error(data?.message || "No se pudo enviar el acta en PDF");
   }
 
   return data;
