@@ -45,9 +45,19 @@ function receiveSms(req, res) {
 
 function receiveRealSmsWebhook(req, res) {
   try {
-    const telefonoOrigen = req.body.From || req.body.from || req.body.telefono_origen;
-    const telefonoDestino = req.body.To || req.body.to || req.body.telefono_destino;
-    const mensaje = req.body.Body || req.body.body || req.body.mensaje;
+    let telefonoOrigen = null;
+    let telefonoDestino = null;
+    let mensaje = null;
+
+    if (typeof req.body === "string") {
+      telefonoOrigen = "MACRODROID";
+      telefonoDestino = "CELULAR_RECEPTOR";
+      mensaje = req.body.trim();
+    } else {
+      telefonoOrigen = req.body.From || req.body.from || req.body.telefono_origen;
+      telefonoDestino = req.body.To || req.body.to || req.body.telefono_destino;
+      mensaje = req.body.Body || req.body.body || req.body.mensaje;
+    }
 
     console.log("SMS REAL RECIBIDO DESDE GATEWAY:");
     console.log({
@@ -58,29 +68,50 @@ function receiveRealSmsWebhook(req, res) {
 
     if (!mensaje) {
       console.log("El SMS real llegó sin cuerpo de mensaje.");
-      return res.type("text/xml").status(200).send("<Response></Response>");
+
+      return res.status(200).json({
+        success: false,
+        message: "SMS sin cuerpo de mensaje"
+      });
     }
 
     const parsedSms = parseSmsMessage(mensaje, telefonoOrigen);
 
     if (!parsedSms.success) {
-      console.log("SMS real con error de formato:", parsedSms);
-      return res.type("text/xml").status(200).send("<Response></Response>");
+      console.log("SMS real con error de formato:");
+      console.log(JSON.stringify(parsedSms, null, 2));
+
+      return res.status(200).json({
+        success: false,
+        message: "SMS recibido pero con error de formato",
+        detalle: parsedSms
+      });
     }
 
     const validacion = validateRrvActa(parsedSms.data);
 
-    console.log("SMS REAL PARSEADO Y VALIDADO:");
-    console.log(JSON.stringify({
-      ...parsedSms.data,
-      estado: validacion.estado,
-      validacion_rrv: validacion
-    }, null, 2));
+    const result = {
+      success: true,
+      message: "SMS real recibido, parseado y validado",
+      data: {
+        ...parsedSms.data,
+        estado: validacion.estado,
+        validacion_rrv: validacion
+      }
+    };
 
-    return res.type("text/xml").status(200).send("<Response></Response>");
+    console.log("SMS REAL PARSEADO Y VALIDADO:");
+    console.log(JSON.stringify(result, null, 2));
+
+    return res.status(200).json(result);
   } catch (error) {
     console.log("Error procesando SMS real:", error.message);
-    return res.type("text/xml").status(200).send("<Response></Response>");
+
+    return res.status(500).json({
+      success: false,
+      message: "Error procesando SMS real",
+      error: error.message
+    });
   }
 }
 
