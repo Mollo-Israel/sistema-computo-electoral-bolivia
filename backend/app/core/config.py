@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     postgres_oficial_user: str = "postgres"
     postgres_oficial_password: str = "postgres"
     uploads_dir: str = "backend/uploads"
+    storage_dir: str = "backend/storage"
+    dashboard_dir: str = "dashboard"
     sms_pin_default: str = "1234"
 
     class Config:
