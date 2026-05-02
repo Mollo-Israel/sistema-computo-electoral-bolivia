@@ -2,6 +2,8 @@
 fastapi
 uvicorn[standard]
 
+openai
+python-dotenv
 # MongoDB
 motor
 pymongo
@@ -13,12 +15,18 @@ sqlalchemy[asyncio]
 # Data validation
 pydantic
 pydantic-settings
-
+PyMuPDF
+pytesseract
+Pillow
+opencv-python
+numpy
+easyocr
 # OCR (MOLLO)
-# pytesseract
-# Pillow
-# pdf2image
-# opencv-python
+pytesseract
+Pillow
+PyMuPDF
+opencv-python
+numpy
 
 # HTTP client
 httpx
